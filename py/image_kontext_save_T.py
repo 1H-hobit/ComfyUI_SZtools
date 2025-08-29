@@ -44,6 +44,7 @@ class TSZImageTaggerSave:
                 "tag_text": ("STRING", {"default": "", "forceInput": True}),
                 "custom_path": ("STRING", {"default": ""}),
                 "filename_prefix": ("STRING", {"default": "comfyui"}),
+                "filename_suffix": ("STRING", {"default": "T"}),
                 "format": (["png", "jpg"],),
                 "quality": ("INT", {"default": 100, "min": 80, "max": 100, "step": 1}),
                 "preview": ("BOOLEAN", {"default": True}),
@@ -56,7 +57,7 @@ class TSZImageTaggerSave:
     OUTPUT_NODE = True
     CATEGORY = 'T-山竹Kontext路径保存'
 
-    def image_tagger_save(self, image, tag_text, custom_path, filename_prefix, format, quality, preview,
+    def image_tagger_save(self, image, tag_text, custom_path, filename_prefix, filename_suffix, format, quality, preview,
                            prompt=None, extra_pnginfo=None):
         folder = custom_path.strip() or self.output_dir
         try:
@@ -80,7 +81,7 @@ class TSZImageTaggerSave:
             index_str = f"{self.counter:04d}"
 
             # 修改文件名格式：去掉下划线
-            base = f"{filename_prefix}{index_str}_T"
+            base = f"{filename_prefix}{index_str}_{filename_suffix}"
             img_path = os.path.join(folder, f"{base}.{format}")
 
             if format == 'png':
@@ -92,8 +93,9 @@ class TSZImageTaggerSave:
                 img.save(img_path, quality=quality)
 
             tag_path = os.path.join(folder, f"{base}.txt")
+            processed_text = remove_empty_lines(tag_text).replace('\n', '').replace('\r', '')
             with open(tag_path, 'w', encoding='utf-8') as f:
-                f.write(remove_empty_lines(tag_text))
+                f.write(processed_text)
 
             log(f"{self.NODE_NAME} -> Saved {base}.{format} and {base}.txt (counter={self.counter})")
             results.append(img)
