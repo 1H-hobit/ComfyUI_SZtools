@@ -78,7 +78,7 @@ class TSZImageTaggerSave:
             img = Image.fromarray(arr)
 
             self.counter = (self.counter + 1) if (self.counter < 9999) else 1
-            index_str = f"{self.counter:04d}"
+            index_str = f"{self.counter:03d}"
 
             # 修改文件名格式：去掉下划线
             base = f"{filename_prefix}{index_str}_{filename_suffix}"
